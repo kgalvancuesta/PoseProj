@@ -5,7 +5,7 @@ import time
 import numpy as np
 import mediapipe as mp
 import base64
-
+import os
 
 # import tensorflow as tf
 
@@ -86,7 +86,7 @@ if __name__ == "__main__":
              "right_foot_index_x,right_foot_index_y," \
              "top_head_x,top_head_y," \
              "file\n"
-    print('python: right before opening csv for writing')
+    print('python: right before opening csv for writing',file=sys.stderr)
     with open(path, 'w') as fd:
         fd.write(header)
         fd.close()
@@ -118,6 +118,8 @@ if __name__ == "__main__":
 
         protoFile = "pose_deploy_linevec_faster_4_stages.prototxt"
         weightsFile = "pose.caffemodel"
+        print("caffemodel was/wasn't found: ",file=sys.stderr)
+        print(os.path.exists(weightsFile),file=sys.stderr)
         net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
 
         nPoints = 15
