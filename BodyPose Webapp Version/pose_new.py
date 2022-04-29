@@ -48,7 +48,8 @@ if __name__ == "__main__":
             inputs.append(data[0].split(",")[1])
             heights.append(float(data[2].rstrip()))
             names.append(data[1])
-
+    with open('pyout.txt', 'w')as pyout:
+        print(f"output_path var: {output_path}", file=pyout)
     path = output_path + "\\output.csv"
     header = "imageName,height," \
              "nose_x,nose_y," \
@@ -86,7 +87,8 @@ if __name__ == "__main__":
              "right_foot_index_x,right_foot_index_y," \
              "top_head_x,top_head_y," \
              "file\n"
-    print('python: right before opening csv for writing',file=sys.stderr)
+    with open('pyout.txt', 'w')as pyout:
+        print('python: right before opening csv for writing',file=pyout)
     with open(path, 'w') as fd:
         fd.write(header)
         fd.close()
@@ -118,8 +120,9 @@ if __name__ == "__main__":
 
         protoFile = "pose_deploy_linevec_faster_4_stages.prototxt"
         weightsFile = "pose.caffemodel"
-        print("caffemodel was/wasn't found: ",file=sys.stderr)
-        print(os.path.exists(weightsFile),file=sys.stderr)
+        with open('pyout.txt', 'w')as pyout:
+            print("caffemodel was/wasn't found: ",file=pyout)
+            print(os.path.exists(weightsFile),file=pyout)
         net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
 
         nPoints = 15
