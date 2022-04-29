@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', require('./router/home'))
 app.use('/', require('./router/result'))
 
-const server = app.listen(3000, function() {
-	console.log("server start at localhost:3000");
+const server = app.listen(80, function() {
+	console.log("server start at localhost:80");
 })
 
