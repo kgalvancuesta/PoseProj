@@ -20,7 +20,7 @@ homeRouter.post('/process', async(req,res)=>{
         if (error) {
           console.log('error')
         } else {
-            exec('python pose_new.py '+ './file.txt ./',function(error,stdout,stderr){
+            exec('python3 pose_new.py '+ './file.txt ./',function(error,stdout,stderr){
                 if(error) {
                     console.info('stderr : '+stderr);
                 }

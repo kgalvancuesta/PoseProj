@@ -86,6 +86,7 @@ if __name__ == "__main__":
              "right_foot_index_x,right_foot_index_y," \
              "top_head_x,top_head_y," \
              "file\n"
+    print('python: right before opening csv for writing')
     with open(path, 'w') as fd:
         fd.write(header)
         fd.close()

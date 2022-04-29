@@ -63,8 +63,8 @@ function readFile(){
 
 
 function send(){
-    const url = 'http://localhost:3000'
-    let sendRequest = new Request(url + '/process', {
+    //const url = 'ec2-18-217-55-119.us-east-2.compute.amazonaws.com'
+    let sendRequest = new Request('/process', {
         method: 'post',
         headers: {
             'Content-Type': 'application/json'
