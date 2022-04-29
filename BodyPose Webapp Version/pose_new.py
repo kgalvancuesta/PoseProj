@@ -6,6 +6,7 @@ import numpy as np
 import mediapipe as mp
 import base64
 import os
+from contextlib import redirect_stderr
 
 # import tensorflow as tf
 
@@ -23,7 +24,8 @@ def image_to_base64(image_np):
 
 
 if __name__ == "__main__":
-
+    stderr = open('pyout.txt','w')
+    redirect_stderr(stderr)
     input_path = sys.argv[1]
     output_path = sys.argv[2]
 
@@ -50,7 +52,7 @@ if __name__ == "__main__":
             names.append(data[1])
     with open('pyout.txt', 'w')as pyout:
         print(f"output_path var: {output_path}", file=pyout)
-    path = output_path + "\\output.csv"
+    csv_path = "output.csv"
     header = "imageName,height," \
              "nose_x,nose_y," \
              "left_eye_inner_x,left_eye_inner_y," \
@@ -89,7 +91,7 @@ if __name__ == "__main__":
              "file\n"
     with open('pyout.txt', 'w')as pyout:
         print('python: right before opening csv for writing',file=pyout)
-    with open(path, 'w') as fd:
+    with open(csv_path, 'w') as fd:
         fd.write(header)
         fd.close()
     # image = cv2.imread('123.jpg')
@@ -174,8 +176,9 @@ if __name__ == "__main__":
         # cv2.imshow('Output-final', annotated_image)
         cv2.imwrite('final.jpg', annotated_image)
         out += image_to_base64(annotated_image)
-        with open(path, 'a') as fd2:
+        with open(csv_path, 'a') as fd2:
             fd2.write(out + '\n')
             fd2.close()
+        stderr.close()
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
