@@ -1,15 +1,18 @@
+from flask import Flask
+import cv2
 import sys
 
-import cv2
 import time
 import numpy as np
 import mediapipe as mp
 import base64
 import os
 from contextlib import redirect_stderr
-import Flask.caffemodel as caffe
 
-# import tensorflow as tf
+caffemodel = Flask(__name__)
+
+def call_caffe():
+    return net
 
 def base64_cv2(base64_str):
     imgString = base64.b64decode(base64_str)
@@ -24,11 +27,15 @@ def image_to_base64(image_np):
     return image_code
 
 
-if __name__ == "__main__":
+@caffemodel.route('/',methods=['GET'])
+def process_image():
     stderr = open('pyout.txt','w')
     redirect_stderr(stderr)
-    input_path = sys.argv[1]
-    output_path = sys.argv[2]
+    with open('pyout.txt', 'w')as pyout:
+        print('/process-image running',file=pyout)
+    
+    input_path = '../file.txt' #sys.argv[1]
+    output_path = '../'#sys.argv[2]
 
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
@@ -53,7 +60,7 @@ if __name__ == "__main__":
             names.append(data[1])
     with open('pyout.txt', 'w')as pyout:
         print(f"output_path var: {output_path}", file=pyout)
-    csv_path = "output.csv"
+    csv_path = output_path + "output.csv"
     header = "imageName,height," \
              "nose_x,nose_y," \
              "left_eye_inner_x,left_eye_inner_y," \
@@ -129,7 +136,7 @@ if __name__ == "__main__":
             print(os.path.exists(weightsFile),file=pyout)
         net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
         """
-        net = caffe.call_caffe()
+        net = call_caffe()
         nPoints = 15
         # POSE_PAIRS = [[0, 1], [1, 2], [2, 3], [3, 4], [1, 5], [5, 6], [6, 7], [1, 14], [14, 8], [8, 9], [9, 10], [14, 11],
         #               [11, 12], [12, 13]]
@@ -185,3 +192,16 @@ if __name__ == "__main__":
         stderr.close()
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
+        return "image processed and csv created!"
+
+
+if __name__ == "__main__":
+    print("setting up caffemodel...")
+    protoFile = "../pose_deploy_linevec_faster_4_stages.prototxt"
+    weightsFile = "../pose.caffemodel"
+    with open('pyout.txt', 'w')as pyout:
+        print("caffemodel was/wasn't found: ",file=pyout)
+        print(os.path.exists(weightsFile),file=pyout)
+
+    net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
+    caffemodel.run(port=5000, debug=True)
