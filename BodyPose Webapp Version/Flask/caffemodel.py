@@ -9,9 +9,12 @@ import base64
 import os
 from contextlib import redirect_stderr
 
-caffemodel = Flask(__name__)
+app = Flask(__name__)
+
+net = ""
 
 def call_caffe():
+    global net
     return net
 
 def base64_cv2(base64_str):
@@ -27,12 +30,9 @@ def image_to_base64(image_np):
     return image_code
 
 
-@caffemodel.route('/',methods=['GET'])
+@app.route('/',methods=['GET'])
 def process_image():
-    stderr = open('pyout.txt','w')
-    redirect_stderr(stderr)
-    with open('pyout.txt', 'w')as pyout:
-        print('/process-image running',file=pyout)
+    print('/process-image running')
     
     input_path = '../file.txt' #sys.argv[1]
     output_path = '../'#sys.argv[2]
@@ -58,8 +58,7 @@ def process_image():
             inputs.append(data[0].split(",")[1])
             heights.append(float(data[2].rstrip()))
             names.append(data[1])
-    with open('pyout.txt', 'w')as pyout:
-        print(f"output_path var: {output_path}", file=pyout)
+    print(f"output_path var: {output_path}")
     csv_path = output_path + "output.csv"
     header = "imageName,height," \
              "nose_x,nose_y," \
@@ -97,8 +96,7 @@ def process_image():
              "right_foot_index_x,right_foot_index_y," \
              "top_head_x,top_head_y," \
              "file\n"
-    with open('pyout.txt', 'w')as pyout:
-        print('python: right before opening csv for writing',file=pyout)
+    print('python: right before opening csv for writing')
     with open(csv_path, 'w') as fd:
         fd.write(header)
         fd.close()
@@ -118,22 +116,16 @@ def process_image():
                     if (landmarks.x < 1) & (landmarks.y < 1):
                         n += 1
                         out += str(int(landmarks.x * image_width)) + ',' + str(int(landmarks.y * image_height)) + ','
-                        # print(joint_names[index], (int(landmarks.x * image_width), int(landmarks.y * image_height)))
-                # print('The total number of nodes is:' + str(n))
 
         annotated_image = image.copy()
-        # print(mp_pose.POSE_CONNECTIONS)
         mp_drawing.draw_landmarks(annotated_image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
-        # cv2.imshow('body-part', annotated_image)
-        cv2.imwrite('body_file.jpg', annotated_image)
-        # cv2.waitKey(0)
+        cv2.imwrite('../body_file.jpg', annotated_image)
 
         """
         protoFile = "pose_deploy_linevec_faster_4_stages.prototxt"
         weightsFile = "pose.caffemodel"
-        with open('pyout.txt', 'w')as pyout:
-            print("caffemodel was/wasn't found: ",file=pyout)
-            print(os.path.exists(weightsFile),file=pyout)
+        print("caffemodel was/wasn't found: ")
+        print(os.path.exists(weightsFile))
         net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
         """
         net = call_caffe()
@@ -141,7 +133,7 @@ def process_image():
         # POSE_PAIRS = [[0, 1], [1, 2], [2, 3], [3, 4], [1, 5], [5, 6], [6, 7], [1, 14], [14, 8], [8, 9], [9, 10], [14, 11],
         #               [11, 12], [12, 13]]
 
-        frame = cv2.imread("body_file.jpg")
+        frame = cv2.imread("../body_file.jpg")
         frameCopy = np.copy(frame)
         frameWidth = frame.shape[1]
         frameHeight = frame.shape[0]
@@ -182,16 +174,16 @@ def process_image():
             #     points.append((int(x), int(y)))
             # else:
             #     points.append(None)
-
+        print('right before writing to final.jpg')
         # cv2.imshow('Output-final', annotated_image)
-        cv2.imwrite('final.jpg', annotated_image)
+        cv2.imwrite('../final.jpg', annotated_image)
         out += image_to_base64(annotated_image)
         with open(csv_path, 'a') as fd2:
             fd2.write(out + '\n')
             fd2.close()
-        stderr.close()
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
+        print('image processed and csv created')
         return "image processed and csv created!"
 
 
@@ -199,9 +191,8 @@ if __name__ == "__main__":
     print("setting up caffemodel...")
     protoFile = "../pose_deploy_linevec_faster_4_stages.prototxt"
     weightsFile = "../pose.caffemodel"
-    with open('pyout.txt', 'w')as pyout:
-        print("caffemodel was/wasn't found: ",file=pyout)
-        print(os.path.exists(weightsFile),file=pyout)
-
+    print("caffemodel was/wasn't found: ")
+    print(os.path.exists(weightsFile))
+    
     net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
-    caffemodel.run(port=5000, debug=True)
+    app.run(port=5000, debug=True)

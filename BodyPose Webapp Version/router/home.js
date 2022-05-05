@@ -18,10 +18,10 @@ function process_image_and_gen_csv(res){
         console.error('error:', error); // Print the error
         console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
         console.log('body:', body); // Print the data received
-        write_csv_into_local(res)        // res.send(body); //Display the response on the website
+        send_csv_as_response(res)        // res.send(body); //Display the response on the website
       }); }
 
-function write_csv_into_local(res){
+function send_csv_as_response(res){
     console.log('exec py successfully');
     try{
         if (fs.existsSync('./output.csv')) {

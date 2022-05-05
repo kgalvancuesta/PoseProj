@@ -75,6 +75,11 @@ function send(){
     fetch(sendRequest).then(response => {
         let result = response.text()
         result.then(res => {
+	    if(res.length  > 0){
+	    	console.log("res has content");
+	    }else{
+	    	console.log("res does not have content");
+	    }
             localStorage.setItem("data", res);
             localStorage.setItem("photodata",JSON.stringify(dataArr))
             window.location.href='/result';
